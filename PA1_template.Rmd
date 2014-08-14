@@ -4,18 +4,42 @@ has not already been unzipped.
 
 ```{r}
 library(ggplot2)
+library(plyr())
+library(RColorBrewer)
 if (!file.exists("activity.csv")) {
   unzip("activity.zip")
 }
+
+colors <- brewer.pal(3, "Set2")
 ```
 
 ## Loading and preprocessing the data
+Now we will load the uncleaned data into a variable called activity. We need to make some adjustments to the data. It doesn't like having the dates as simple strings, so we'll change those to dates. Also want to make sure the interval is an integer.Then create a variable called deez_steps to hold the mean, median, and total steps for each day with all the missing values removed.
 
+```{r}
+activity <- read.csv('activity.csv')
+activity$date <- as.Date(activity$date, format="%Y-%m-%d")
+activity$interval <- as.numeric(activity$interval)
+deez_steps <- ddply(activity[!is.na(activity$steps),], .(date), summarize, total=sum(steps), mean=mean(steps), median=median(steps))
+```
 
 
 ## What is mean total number of steps taken per day?
-
-
+The mean number of steps taken per day:
+```{r}
+mean(deez_steps$total)
+```
+The median number of steps taken per day:
+```{r}
+median(deez_steps$total)
+```
+Here is a pretty picture showing a histogram of the means.
+```{r}
+gg <- ggplot(deez_steps, aes(x=total)) + geom_histogram(fill=colors[1])
+gg <- gg + theme_bw()
+gg <- gg + labs(title="Total steps taken in a single day", x="steps", y="")
+print(gg)
+```
 
 ## What is the average daily activity pattern?
 
