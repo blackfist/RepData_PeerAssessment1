@@ -1,5 +1,13 @@
 # Reproducible Research: Peer Assessment 1
+First we will load the libraries that will be used for the analysis and unzip the data file if it
+has not already been unzipped.
 
+```{r}
+library(ggplot2)
+if (!file.exists("activity.csv")) {
+  unzip("activity.zip")
+}
+```
 
 ## Loading and preprocessing the data
 
