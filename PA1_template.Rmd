@@ -118,3 +118,7 @@ grid.arrange(weekday, weekend)
 ```
 
 Looks like this person sleeps in a bit on the weekend and takes his or her run a little bit later in the afternoon sometimes. This person is also much more active throughout the day on the weekend.
+
+# When you're ready to finish the file, enter this at the console
+# library(knitr)
+# library(markdown)
