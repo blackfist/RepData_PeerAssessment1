@@ -6,6 +6,7 @@ has not already been unzipped.
 library(ggplot2)
 library(plyr())
 library(RColorBrewer)
+library(gridExtra)
 if (!file.exists("activity.csv")) {
   unzip("activity.zip")
 }
@@ -58,7 +59,7 @@ print(gg)
 There are some big spikes in there. Which time interval has the highest average number of steps?
 
 ```{r}
-deez_intervals[deez_intervals$mean==max(deez_intervals$mean),]$intervala
+deez_intervals[deez_intervals$mean==max(deez_intervals$mean),]$interval
 ```
 
 ## Imputing missing values
@@ -95,3 +96,25 @@ print(gg)
 summary(deez_values_days$total)
 ```
 ## Are there differences in activity patterns between weekdays and weekends?
+For my next trick I'm going to make two graphics showing the difference between activity during the week and activity on weekends. To start with, I'm going to add a column to the dataset with the day of the week. Then I'll make two charts using that data, but only taking Saturday and Sunday for the weekend chart.
+
+```{r}
+deez_days <- deez_values
+deez_days$weekday <- weekdays(deez_days$date)
+weekend_data <- deez_days[deez_days$weekday %in% c('Saturday','Sunday'),]
+weekend_data <- ddply(weekend_data, .(interval), summarize, mean=mean(steps) )
+weekday_data <- deez_days[!deez_days$weekday %in% c('Saturday','Sunday'),]
+weekday_data <- ddply(weekday_data, .(interval), summarize, mean=mean(steps) )
+
+weekend <- ggplot(weekend_data, aes(x=interval, y=mean)) + geom_line(color=colors[1])
+weekend <- weekend + theme_bw()
+weekend <- weekend + labs(title="Weekend pattern of activity", x="Time interval", y="Average number of steps")
+
+weekday <- ggplot(weekday_data, aes(x=interval, y=mean)) + geom_line(color=colors[1])
+weekday <- weekday + theme_bw()
+weekday <- weekday + labs(title="Weekday pattern of activity", x="Time interval", y="Average number of steps")
+
+grid.arrange(weekday, weekend)
+```
+
+Looks like this person sleeps in a bit on the weekend and takes his or her run a little bit later in the afternoon sometimes. This person is also much more active throughout the day on the weekend.
